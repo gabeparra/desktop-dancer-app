@@ -26,14 +26,21 @@ pip install PyQt6
 python desktop_dancer.py
 ```
 
-Drag to move, scroll to resize, middle-click for click-through, right-click (or the tray icon) for the menu.
-Going to lunch? `desktop-dancer --lunch "back at 1pm" --timer 1h`, or install `desktop-dancer.scr` from the release as your Windows screensaver.
+It starts with the example dancer. Right-click, then **Change clip…** to use your own; it's remembered next time.
+Drag to move, scroll to resize, middle-click for click-through. Going to lunch? `desktop-dancer --lunch "back at 1pm" --timer 1h`, or install `desktop-dancer.scr` from the release as your Windows screensaver.
+
+## How it works
+
+1. **Matting.** [Robust Video Matting](https://github.com/PeterL1n/RobustVideoMatting) predicts an alpha matte for every frame of your video (`rvm_to_webp.py`, on CUDA).
+2. **Alpha levels.** A levels curve snaps the matte's unsure middle to solid, so the dancer never looks see-through, and keeps the soft edges on hair.
+3. **Animated WebP.** Frames are stored with their alpha. VP9-alpha lost its alpha in common ffmpeg builds and APNG came out about 30x bigger, so WebP it is.
+4. **The window.** PyQt6 plays it with `QMovie` in a frameless, translucent, always-on-top tool window. Click-through flips Qt's transparent-for-input flag, and the tray icon always gets you back.
 
 ## Bring your own dancer
 
 Any animated WebP or GIF works: `python desktop_dancer.py my_dance.webp`.
 
-To cut one from a video you shot or have the rights to, [Robust Video Matting](https://github.com/PeterL1n/RobustVideoMatting) removes the background (needs an NVIDIA GPU and ffmpeg):
+To cut one from a video you shot or have the rights to (needs an NVIDIA GPU and ffmpeg):
 
 ```bash
 pip install torch torchvision numpy

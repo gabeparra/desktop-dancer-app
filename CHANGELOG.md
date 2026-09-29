@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.1 (2026-09-29)
+
+- **Change clip…** in the tray menu. A clip you pick, or pass on the command line, is remembered for the next launch, the lunch screen and the screensaver.
+- Works without the example clip too: it asks for a file, and prints usage if you cancel. Lunch mode and the screensaver never pop a dialog; with no clip they show just the sign.
+- `--clip` is gone; pass a file path instead.
+
 ## 0.5.0 (2026-09-29)
 
 - New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default). It replaces the three earlier demo clips, which were copyrighted footage and are gone from the repo and its history. Any other clip is a file path away.

@@ -4,8 +4,11 @@ Three modes:
 
 Normal (default) — a small floating dancer window with a tray icon.
 
-    desktop-dancer                          # bundled pajama dance
-    desktop-dancer /path/to/anim.webp       # any animated webp/gif
+    desktop-dancer                          # your last clip, else the example dancer
+    desktop-dancer my_dance.webp            # any animated WebP or GIF
+
+One example dancer ships with the app. A clip you open is remembered for next
+time, and the tray menu has "Change clip..." to swap it.
 
 Lunch — fullscreen "I'M ON LUNCH" away screen with the dancer in the middle.
 
@@ -19,7 +22,8 @@ message, so you don't have to relaunch from the command line.
 Screensaver — rename/copy the built exe to ``desktop-dancer.scr`` and Windows will
 treat it as a screen saver. The OS passes ``/s`` (fullscreen), ``/c`` (settings),
 or ``/p:HWND`` (preview rectangle); we handle all three. In ``/s`` mode the
-overlay exits on any mouse motion, click, or keypress.
+overlay exits on any mouse motion, click, or keypress. It plays your last clip
+(or the example), and shows just the lunch sign if there's neither.
 
 Window controls (when not click-through):
     Drag           — move
@@ -35,37 +39,79 @@ import re
 import sys
 from pathlib import Path
 
-from PyQt6.QtCore import Qt, QSize, QPoint, QTimer, QTime, QDateTime
+from PyQt6.QtCore import Qt, QSize, QPoint, QTimer, QTime, QDateTime, QSettings
 from PyQt6.QtGui import (
     QMovie, QIcon, QPixmap, QPainter, QAction, QFont, QImageReader, QCursor,
 )
 from PyQt6.QtWidgets import (
     QApplication, QLabel, QWidget, QSystemTrayIcon, QMenu,
-    QVBoxLayout, QInputDialog, QMessageBox,
+    QVBoxLayout, QInputDialog, QMessageBox, QFileDialog,
 )
 
 
-# Friendly clip name -> bundled filename (resolved via resource_path).
-CLIP_MAP = {
-    "pajamas": "pajama_dance.webp",
-}
-DEFAULT_CLIP = "pajamas"
+CLIP_FILTER = "Animated clips (*.webp *.gif);;All files (*)"
+EXAMPLE_CLIP = "pajama_dance.webp"  # bundled when present; builds work without it
 
 
-def resource_path(rel: str) -> Path:
-    """Resolve a bundled (PyInstaller _MEIPASS) or repo-relative resource."""
+def settings() -> QSettings:
+    return QSettings("desktop-dancer", "desktop-dancer")
+
+
+def playable(path: Path) -> bool:
+    return path.is_file() and QMovie(str(path)).isValid()
+
+
+def remembered_clip() -> Path | None:
+    """The last clip that played, if it's still on disk and still readable."""
+    value = settings().value("clip", "", type=str)
+    return Path(value) if value and playable(Path(value)) else None
+
+
+def example_clip() -> Path | None:
+    """The bundled example (PyInstaller _MEIPASS or next to this file), if any."""
     base = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parent))
-    return base / rel
+    path = base / EXAMPLE_CLIP
+    return path if path.is_file() else None
 
 
-def resolve_clip(name: str | None, explicit_path: str | None) -> Path:
-    """Pick a clip path: an explicit file wins, then a bundled clip by name."""
+def remember_clip(path: Path) -> None:
+    settings().setValue("clip", str(path))
+
+
+def pick_clip() -> Path | None:
+    """File picker that only returns something QMovie can actually play."""
+    start = str((remembered_clip() or Path.home() / "x").parent)
+    while True:
+        name, _ = QFileDialog.getOpenFileName(None, "Pick a dance clip", start, CLIP_FILTER)
+        if not name:
+            return None
+        path = Path(name)
+        if playable(path):
+            return path
+        QMessageBox.warning(
+            None, "desktop-dancer",
+            f"Can't play {path.name}. Pick an animated WebP or GIF.",
+        )
+
+
+def resolve_clip(explicit_path: str | None, ask: bool = True) -> Path | None:
+    """A path on the command line wins, then your last clip, then the bundled
+    example, then (if ``ask``) a file picker. Clips you choose are remembered;
+    the example never is, since it lives in a temp dir inside the exe.
+    None means there's nothing to play."""
     if explicit_path:
-        return Path(explicit_path).expanduser().resolve()
-    rel = CLIP_MAP.get(name or DEFAULT_CLIP)
-    if rel is None:
-        sys.exit(f"Unknown --clip {name!r}; choose from {sorted(CLIP_MAP)}")
-    return resource_path(rel)
+        path = Path(explicit_path).expanduser().resolve()
+        if not playable(path):
+            sys.exit(f"Can't play {path}. Pass an animated WebP or GIF.")
+        remember_clip(path)
+        return path
+    found = remembered_clip() or example_clip()
+    if found is not None or not ask:
+        return found
+    path = pick_clip()
+    if path is not None:
+        remember_clip(path)
+    return path
 
 
 _DURATION_RE = re.compile(r"^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$")
@@ -121,11 +167,22 @@ class Dancer(QWidget):
         self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAttribute(Qt.WidgetAttribute.WA_NoSystemBackground)
 
-        self.clip_path = path  # remembered so the tray can reuse it for lunch mode
-
         self.label = QLabel(self)
         self.label.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
+        self.movie: QMovie | None = None
+        self._scale = 0.5
+        self.set_clip(path)
+
+        self._drag_offset: QPoint | None = None
+        self._click_through = False
+        self._context_menu: QMenu | None = None
+
+    def set_clip(self, path: Path):
+        """Swap the playing clip, keeping the current scale."""
+        if self.movie is not None:
+            self.movie.stop()
+        self.clip_path = path  # remembered so the tray can reuse it for lunch mode
         self.movie = load_movie(path)
         self.label.setMovie(self.movie)
         self.movie.start()
@@ -135,12 +192,7 @@ class Dancer(QWidget):
             self.movie.jumpToNextFrame()
             size = self.movie.currentImage().size()
         self.base_size = size if not size.isEmpty() else QSize(640, 360)
-        self._scale = 0.5
         self._apply_scale()
-
-        self._drag_offset: QPoint | None = None
-        self._click_through = False
-        self._context_menu: QMenu | None = None
 
     def set_context_menu(self, menu: QMenu):
         """Hand the dancer the tray's menu so right-click can pop it."""
@@ -205,7 +257,7 @@ class LunchOverlay(QWidget):
     """
 
     def __init__(
-        self, clip_path: Path, title: str, message: str,
+        self, clip_path: Path | None, title: str, message: str,
         on_dismiss=None, screensaver: bool = False,
         timer_seconds: int | None = None,
     ):
@@ -264,12 +316,15 @@ class LunchOverlay(QWidget):
         self._clock_timer.timeout.connect(self._tick)
         self._clock_timer.start(1000)
 
-        # Dancer loop.
+        # Dancer loop, when there's a clip. Without one it's just the sign.
         self.dancer_label = QLabel()
-        self.movie = load_movie(clip_path)
-        self.dancer_label.setMovie(self.movie)
+        self.movie = load_movie(clip_path) if clip_path else None
+        if self.movie is not None:
+            self.dancer_label.setMovie(self.movie)
+            self.movie.start()
+        else:
+            self.dancer_label.hide()
         self.dancer_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.movie.start()
 
         # Hint at the bottom. Screensaver mode keeps it discreet since users
         # already know any input dismisses a screensaver.
@@ -327,7 +382,7 @@ class LunchOverlay(QWidget):
             self._start_mouse_pos = QCursor.pos()
         # Size the dancer at ~40% of the screen height once we know the screen.
         screen = self.screen().availableGeometry() if self.screen() else None
-        if screen is None:
+        if screen is None or self.movie is None:
             return
         target_h = int(screen.height() * 0.4)
         size = self.movie.currentImage().size()
@@ -369,6 +424,10 @@ class TrayController:
         lunch_action = QAction("Go on lunch…", menu)
         lunch_action.triggered.connect(self._enter_lunch_mode)
         menu.addAction(lunch_action)
+
+        clip_action = QAction("Change clip…", menu)
+        clip_action.triggered.connect(self._change_clip)
+        menu.addAction(clip_action)
         menu.addSeparator()
 
         move_action = QAction("Move (briefly enables clicks)", menu)
@@ -406,6 +465,12 @@ class TrayController:
             self.ct_action.setChecked(False)
         self.dancer.raise_()
         self.dancer.activateWindow()
+
+    def _change_clip(self):
+        path = pick_clip()
+        if path is not None:
+            self.dancer.set_clip(path)
+            remember_clip(path)
 
     def _enter_lunch_mode(self):
         if self._overlay is not None:
@@ -462,7 +527,7 @@ def run_screensaver(mode: str) -> int:
     app.setQuitOnLastWindowClosed(True)
 
     if mode == "s":
-        clip = resolve_clip(None, None)
+        clip = remembered_clip() or example_clip()  # never a dialog here
         overlay = LunchOverlay(
             clip, "I'M ON LUNCH", "",
             screensaver=True,
@@ -472,9 +537,18 @@ def run_screensaver(mode: str) -> int:
         return app.exec()
 
     if mode == "c":
+        clip = remembered_clip()
+        if clip is not None:
+            now_playing = f"Plays your last clip ({clip.name}) under an 'I'M ON LUNCH' sign."
+        elif example_clip() is not None:
+            now_playing = ("Plays the example dancer under an 'I'M ON LUNCH' sign. "
+                           "Pick your own clip in desktop-dancer.exe to use that instead.")
+        else:
+            now_playing = ("No clip yet: open desktop-dancer.exe once and pick one. "
+                           "Until then it shows just the 'I'M ON LUNCH' sign.")
         QMessageBox.information(
             None, "desktop-dancer screensaver",
-            "Default: the pajama dancer with an 'I'M ON LUNCH' overlay.\n\n"
+            now_playing + "\n\n"
             "Move the mouse or press any key to exit while it's running.\n\n"
             "For a custom message, launch desktop-dancer.exe directly with "
             "`--lunch \"your message here\"`.",
@@ -494,11 +568,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "path", nargs="?",
-        help="Path to an animated webp/gif. Overrides --clip if given.",
-    )
-    p.add_argument(
-        "--clip", choices=sorted(CLIP_MAP),
-        help=f"Pick a bundled clip (default: {DEFAULT_CLIP}).",
+        help="Animated WebP or GIF to play. Without one: your last clip, "
+             "else the example dancer, else a file picker.",
     )
     p.add_argument(
         "--lunch", metavar="MESSAGE", nargs="?", const="",
@@ -528,16 +599,22 @@ def main():
     app = QApplication(sys.argv[:1])
     app.setQuitOnLastWindowClosed(False)
 
-    clip = resolve_clip(args.clip, args.path)
-    if not clip.exists():
-        sys.exit(f"Clip not found: {clip}")
-
     if args.lunch is not None:
+        # Heading out shouldn't start with a file dialog: no clip, just the sign.
+        clip = resolve_clip(args.path, ask=False)
         overlay = LunchOverlay(
             clip, args.title, args.lunch, timer_seconds=args.timer,
         )
         overlay.showFullScreen()
         sys.exit(app.exec())
+
+    clip = resolve_clip(args.path)
+    if clip is None:
+        if sys.stderr:  # None in the windowed Windows build
+            build_arg_parser().print_usage(sys.stderr)
+            print("desktop-dancer: no clip picked. Try: desktop-dancer my_dance.webp",
+                  file=sys.stderr)
+        sys.exit(2)
 
     dancer = Dancer(clip)
     dancer.show()
