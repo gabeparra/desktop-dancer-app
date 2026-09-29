@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 gabubu-dev
+Copyright (c) 2026 Gabriel Parra
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,6 +22,8 @@ SOFTWARE.
 
 ---
 
-Note: the demo file `dance_loop.webp` is a derivative of footage owned by
-Studio CHOOM / ILLIT / HYBE and is included for technical demonstration
-purposes only. The MIT license above applies to the source code only.
+The bundled clip `pajama_dance.webp` is a background-removed cut of
+"Woman Wearing Sleepwear Dancing" by cottonbro studio
+(https://www.pexels.com/video/9499408/), used under the Pexels License
+(https://www.pexels.com/license/). The MIT license above covers the source
+code, not that clip.

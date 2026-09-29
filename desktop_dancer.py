@@ -4,15 +4,13 @@ Three modes:
 
 Normal (default) — a small floating dancer window with a tray icon.
 
-    desktop-dancer                          # bundled kpop clip
-    desktop-dancer --clip kpop2             # second kpop clip
-    desktop-dancer --clip sakura            # Cardcaptor Sakura OP1
+    desktop-dancer                          # bundled pajama dance
     desktop-dancer /path/to/anim.webp       # any animated webp/gif
 
 Lunch — fullscreen "I'M ON LUNCH" away screen with the dancer in the middle.
 
     desktop-dancer --lunch "back at 1pm"
-    desktop-dancer --lunch "lunch, back ~1pm" --clip sakura
+    desktop-dancer --lunch "lunch, back ~1pm" my_dance.webp
     desktop-dancer --lunch "brb" --title "AFK"
 
 The tray icon also has a "Go on lunch..." menu entry that pops a prompt for the
@@ -49,11 +47,9 @@ from PyQt6.QtWidgets import (
 
 # Friendly clip name -> bundled filename (resolved via resource_path).
 CLIP_MAP = {
-    "kpop":   "dance_loop.webp",
-    "kpop2":  "new_loop.webp",
-    "sakura": "sakura_loop.webp",
+    "pajamas": "pajama_dance.webp",
 }
-DEFAULT_CLIP = "sakura"
+DEFAULT_CLIP = "pajamas"
 
 
 def resource_path(rel: str) -> Path:
@@ -63,18 +59,13 @@ def resource_path(rel: str) -> Path:
 
 
 def resolve_clip(name: str | None, explicit_path: str | None) -> Path:
-    """Pick a clip path. Falls back to kpop if the preferred clip isn't bundled."""
+    """Pick a clip path: an explicit file wins, then a bundled clip by name."""
     if explicit_path:
         return Path(explicit_path).expanduser().resolve()
     rel = CLIP_MAP.get(name or DEFAULT_CLIP)
     if rel is None:
         sys.exit(f"Unknown --clip {name!r}; choose from {sorted(CLIP_MAP)}")
-    path = resource_path(rel)
-    if not path.exists() and name is None:
-        # Sakura is the default but might not be bundled in a custom build —
-        # fall back to the always-present kpop loop rather than crashing.
-        path = resource_path(CLIP_MAP["kpop"])
-    return path
+    return resource_path(rel)
 
 
 _DURATION_RE = re.compile(r"^(?:(\d+)h)?(?:(\d+)m)?(?:(\d+)s)?$")
@@ -471,7 +462,7 @@ def run_screensaver(mode: str) -> int:
     app.setQuitOnLastWindowClosed(True)
 
     if mode == "s":
-        clip = resolve_clip(None, None)  # sakura by default, kpop fallback
+        clip = resolve_clip(None, None)
         overlay = LunchOverlay(
             clip, "I'M ON LUNCH", "",
             screensaver=True,
@@ -483,7 +474,7 @@ def run_screensaver(mode: str) -> int:
     if mode == "c":
         QMessageBox.information(
             None, "desktop-dancer screensaver",
-            "Default: Sakura with an 'I'M ON LUNCH' overlay.\n\n"
+            "Default: the pajama dancer with an 'I'M ON LUNCH' overlay.\n\n"
             "Move the mouse or press any key to exit while it's running.\n\n"
             "For a custom message, launch desktop-dancer.exe directly with "
             "`--lunch \"your message here\"`.",
@@ -507,7 +498,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--clip", choices=sorted(CLIP_MAP),
-        help="Pick a bundled clip (default: kpop).",
+        help=f"Pick a bundled clip (default: {DEFAULT_CLIP}).",
     )
     p.add_argument(
         "--lunch", metavar="MESSAGE", nargs="?", const="",

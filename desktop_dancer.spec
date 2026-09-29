@@ -7,7 +7,7 @@ block_cipher = None
 
 # Bundle every clip we have. Skip ones that haven't been rendered yet so a
 # fresh checkout still builds before someone runs the matting pipeline.
-_CLIPS = ['dance_loop.webp', 'new_loop.webp', 'sakura_loop.webp']
+_CLIPS = ['pajama_dance.webp']
 clip_datas = [(c, '.') for c in _CLIPS if os.path.exists(c)]
 
 a = Analysis(

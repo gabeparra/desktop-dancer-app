@@ -24,3 +24,11 @@ dance_loop_v2.webp
 sakura_src.*
 sakura_720p.*
 sakura_sample*.png
+
+# Old copyrighted demo clips, kept locally for personal use and never
+# committed again (purged from history in v0.5.0).
+dance_loop.webp
+new_loop.webp
+sakura_loop.webp
+# Pexels source for the bundled pajama clip
+pajama_src.*
