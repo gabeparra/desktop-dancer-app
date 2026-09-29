@@ -9,7 +9,7 @@
 ## 0.5.0 (2026-09-29)
 
 - New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default). It replaces the three earlier demo clips, which were copyrighted footage and are gone from the repo and its history. Any other clip is a file path away.
-- The repo moved to `gabeparra/desktop-dancer`.
+- The repo moved to the gabeparra account (now `gabeparra/desktop-dancer-app`).
 - Shorter README with a banner and a demo GIF.
 
 ## 0.4.1 (2026-05-18)

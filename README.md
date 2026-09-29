@@ -3,7 +3,7 @@
 
   <br/>
 
-  <a href="https://github.com/gabeparra/desktop-dancer/releases/latest"><img src="https://img.shields.io/github/v/release/gabeparra/desktop-dancer?color=3ddc97" alt="release" /></a>
+  <a href="https://github.com/gabeparra/desktop-dancer-app/releases/latest"><img src="https://img.shields.io/github/v/release/gabeparra/desktop-dancer-app?color=3ddc97" alt="release" /></a>
   <img src="https://img.shields.io/badge/Windows%20%C2%B7%20macOS%20%C2%B7%20Linux-2b1152" alt="platforms" />
   <img src="https://img.shields.io/badge/PyQt6-41CD52?logo=qt&logoColor=white" alt="PyQt6" />
   <img src="https://img.shields.io/badge/license-MIT-ff6fb1" alt="MIT" />
@@ -15,13 +15,13 @@ A real dancer, background removed, looping on top of your windows. Step away and
 
 ## Quick start
 
-**Windows:** grab `desktop-dancer.exe` from the [latest release](https://github.com/gabeparra/desktop-dancer/releases/latest) and double-click it.
+**Windows:** grab `desktop-dancer.exe` from the [latest release](https://github.com/gabeparra/desktop-dancer-app/releases/latest) and double-click it.
 
 **macOS / Linux:**
 
 ```bash
-git clone https://github.com/gabeparra/desktop-dancer.git
-cd desktop-dancer
+git clone https://github.com/gabeparra/desktop-dancer-app.git
+cd desktop-dancer-app
 pip install PyQt6
 python desktop_dancer.py
 ```
