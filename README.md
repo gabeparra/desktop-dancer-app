@@ -22,12 +22,14 @@ A real dancer, background removed, looping on top of your windows. Step away and
 ```bash
 git clone https://github.com/gabeparra/desktop-dancer-app.git
 cd desktop-dancer-app
-pip install PyQt6
-python desktop_dancer.py
+pip install -e .
+desktop-dancer
 ```
 
-It starts with the example dancer. Right-click, then **Change clip…** to use your own; it's remembered next time.
-Drag to move, scroll to resize, middle-click for click-through. Going to lunch? `desktop-dancer --lunch "back at 1pm" --timer 1h`, or install `desktop-dancer.scr` from the release as your Windows screensaver.
+(Or just `pip install PyQt6 && python desktop_dancer.py`.)
+
+It starts with the example dancer in the corner of your screen. Right-click (or drop an animated WebP/GIF onto her) and pick **Change clip…** to use your own; your clip, size, and position are remembered next time.
+Drag to move, scroll to resize, Space to pause, middle-click for click-through. Going to lunch? `desktop-dancer --lunch "back at 1pm"` (shows a 1h countdown by default; pass `--timer 30m` or `--timer 0` to adjust/hide), or install `desktop-dancer.scr` from the release as your Windows screensaver.
 
 ## How it works
 

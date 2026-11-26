@@ -17,6 +17,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
 new_sample*.png
 new_dance_src.*
 new_720p.*

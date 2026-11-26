@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "desktop-dancer"
+version = "0.5.2"
+description = "A floating, transparent dancer for your desktop, with a fullscreen 'on lunch' mode."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+dependencies = [
+    "PyQt6>=6.5",
+]
+
+[project.optional-dependencies]
+matting = [
+    "numpy",
+    "torch",
+    "torchvision",
+]
+dev = [
+    "pytest>=8",
+]
+
+[project.scripts]
+desktop-dancer = "desktop_dancer:main"
+
+[tool.setuptools]
+py-modules = ["desktop_dancer", "rvm_to_webp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

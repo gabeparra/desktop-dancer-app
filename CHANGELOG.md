@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Fixed huge RAM usage during playback by streaming frames (`CacheNone`, ~6 MB instead of 450 MB+ on the bundled clip) and ensured finite-loop clips still loop continuously.
+- Fixed lunch overlay layout overflow on 720p/HiDPI screens, missing transparent background on the lunch dancer label on Windows, text wrapping for long messages/titles, and clean timer/movie teardown on dismiss.
+- Fixed Wayland drag-to-move via `startSystemMove()`, synced middle-click click-through with the tray menu checkbox, blocked click-through lockout when no system tray is available, and avoided squashing aspect ratio at small sizes.
+- Defaulted `--lunch` CLI mode to the 1-hour countdown timer (use `--timer 0` or `--timer off` to hide), added a message/timer/title dialog for tray lunch mode, multi-monitor backdrop coverage for screensaver `/s` mode, drag-and-drop clip swapping, Pause, Always on top, Use example dancer, and remembered window position/scale.
+- Fixed `rvm_to_webp.py` to always scale input video to the requested `w x h`, auto-select CUDA/MPS/CPU, and report ffmpeg errors cleanly instead of silently writing 0 frames.
+- Added `pyproject.toml`, `pytest` test suite, and GitHub Actions CI.
+
 ## 0.5.1 (2026-09-29)
 
 - **Change clip…** in the tray menu. A clip you pick, or pass on the command line, is remembered for the next launch, the lunch screen and the screensaver.
