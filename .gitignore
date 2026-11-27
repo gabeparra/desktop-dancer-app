@@ -1,4 +1,4 @@
-# Source clips and intermediate renders — keep the demo .webp only.
+# Source clips and intermediate renders - keep the demo .webp only.
 dance_src.*
 dance_720p.*
 dance_rgba.*
@@ -17,6 +17,10 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
 new_sample*.png
 new_dance_src.*
 new_720p.*

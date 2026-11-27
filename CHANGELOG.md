@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Fixed huge RAM usage during playback by streaming frames (`CacheNone`, ~6 MB instead of 450 MB+ on the bundled clip) and ensured finite-loop clips still loop continuously.
+- Fixed lunch overlay layout overflow on 720p/HiDPI screens, missing transparent background on the lunch dancer label on Windows, text wrapping for long messages/titles, and clean timer/movie teardown on dismiss.
+- Fixed Wayland drag-to-move via `startSystemMove()`, synced middle-click click-through with the tray menu checkbox, blocked click-through lockout when no system tray is available, and avoided squashing aspect ratio at small sizes.
+- Defaulted `--lunch` CLI mode to the 1-hour countdown timer (use `--timer 0` or `--timer off` to hide), added a message/timer/title dialog for tray lunch mode, multi-monitor backdrop coverage for screensaver `/s` mode, drag-and-drop clip swapping, Pause, Always on top, Use example dancer, and remembered window position/scale.
+- Fixed `rvm_to_webp.py` to always scale input video to the requested `w x h`, auto-select CUDA/MPS/CPU, and report ffmpeg errors cleanly instead of silently writing 0 frames.
+- Added `pyproject.toml`, `pytest` test suite, and GitHub Actions CI.
+- Moved third-party Pexels clip credit from `LICENSE` to `NOTICE` for clean MIT detection, refreshed `assets/demo.gif` and `assets/lunch-mode.png` from a clean solid-color virtual desktop capture, and aligned `README.md` with the project standard.
+
 ## 0.5.1 (2026-09-29)
 
 - **Change clip…** in the tray menu. A clip you pick, or pass on the command line, is remembered for the next launch, the lunch screen and the screensaver.
@@ -8,7 +18,7 @@
 
 ## 0.5.0 (2026-09-29)
 
-- New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default). It replaces the three earlier demo clips, which were copyrighted footage and are gone from the repo and its history. Any other clip is a file path away.
+- New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default), replacing the earlier placeholder demo clips. Any other clip is a file path away.
 - The repo moved to the gabeparra account (now `gabeparra/desktop-dancer-app`).
 - Shorter README with a banner and a demo GIF.
 
