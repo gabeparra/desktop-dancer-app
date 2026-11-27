@@ -8,7 +8,7 @@
 - Defaulted `--lunch` CLI mode to the 1-hour countdown timer (use `--timer 0` or `--timer off` to hide), added a message/timer/title dialog for tray lunch mode, multi-monitor backdrop coverage for screensaver `/s` mode, drag-and-drop clip swapping, Pause, Always on top, Use example dancer, and remembered window position/scale.
 - Fixed `rvm_to_webp.py` to always scale input video to the requested `w x h`, auto-select CUDA/MPS/CPU, and report ffmpeg errors cleanly instead of silently writing 0 frames.
 - Added `pyproject.toml`, `pytest` test suite, and GitHub Actions CI.
-- Moved third-party Pexels clip credit from `LICENSE` to `NOTICE` for clean MIT detection, added `assets/lunch-mode.png`, and aligned `README.md` with the project standard.
+- Moved third-party Pexels clip credit from `LICENSE` to `NOTICE` for clean MIT detection, refreshed `assets/demo.gif` and `assets/lunch-mode.png` from a clean solid-color virtual desktop capture, and aligned `README.md` with the project standard.
 
 ## 0.5.1 (2026-09-29)
 

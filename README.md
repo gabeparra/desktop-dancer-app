@@ -19,11 +19,10 @@
 ## Demo
 
 <p align="center">
-  <img src="assets/demo.gif" alt="desktop-dancer floating transparently over an editor and terminal" width="720" />
+  <img src="assets/demo.gif" alt="desktop-dancer live preview on a clean solid-color desktop: floating transparent dancer, drag, scroll resize, right-click menu, and fullscreen lunch mode" width="720" />
 </p>
-
 <p align="center">
-  <img src="assets/lunch-mode.png" alt="Fullscreen I'M ON LUNCH away screen with countdown timer and centered dancer" width="720" />
+  <sub>Live desktop capture: floating transparent dancer, drag to move, scroll to resize, right-click menu, and fullscreen <code>--lunch</code> mode with live countdown.</sub>
 </p>
 
 ## Quickstart
@@ -79,6 +78,10 @@ desktop-dancer --lunch "AFK" --title "BRB" --timer 0     # hide countdown
 ```
 
 You can also trigger lunch mode from the tray menu (**Go on lunch...**) or install `desktop-dancer.scr` on Windows as a native screensaver (`/s`, `/c`, `/p:HWND`). Press `Esc` (or move the mouse in `/s` mode) to dismiss.
+
+<p align="center">
+  <img src="assets/lunch-mode.png" alt="Fullscreen I'M ON LUNCH away screen with live countdown timer and centered dancer" width="720" />
+</p>
 
 ## Stack & Architecture
 
