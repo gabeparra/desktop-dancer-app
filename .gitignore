@@ -1,4 +1,4 @@
-# Source clips and intermediate renders — keep the demo .webp only.
+# Source clips and intermediate renders - keep the demo .webp only.
 dance_src.*
 dance_720p.*
 dance_rgba.*

@@ -8,6 +8,7 @@
 - Defaulted `--lunch` CLI mode to the 1-hour countdown timer (use `--timer 0` or `--timer off` to hide), added a message/timer/title dialog for tray lunch mode, multi-monitor backdrop coverage for screensaver `/s` mode, drag-and-drop clip swapping, Pause, Always on top, Use example dancer, and remembered window position/scale.
 - Fixed `rvm_to_webp.py` to always scale input video to the requested `w x h`, auto-select CUDA/MPS/CPU, and report ffmpeg errors cleanly instead of silently writing 0 frames.
 - Added `pyproject.toml`, `pytest` test suite, and GitHub Actions CI.
+- Moved third-party Pexels clip credit from `LICENSE` to `NOTICE` for clean MIT detection, added `assets/lunch-mode.png`, and aligned `README.md` with the project standard.
 
 ## 0.5.1 (2026-09-29)
 
@@ -17,7 +18,7 @@
 
 ## 0.5.0 (2026-09-29)
 
-- New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default). It replaces the three earlier demo clips, which were copyrighted footage and are gone from the repo and its history. Any other clip is a file path away.
+- New bundled dancer: a Pexels clip by cottonbro studio (`--clip pajamas`, the default), replacing the earlier placeholder demo clips. Any other clip is a file path away.
 - The repo moved to the gabeparra account (now `gabeparra/desktop-dancer-app`).
 - Shorter README with a banner and a demo GIF.
 
